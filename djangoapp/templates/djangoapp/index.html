@@ -1,15 +1,20 @@
 {% extends "djangoapp/layout.html" %}
 
 {% block content %}
-    <table class="table" id="table" data-filter-control="true">
+    <table class="table"
+           id="table"
+           data-toggle="table"
+           data-filter-control="true" <!-- Enables the filter control -->
+           data-filter-show-clear="true" <!-- Adds a clear button to clear filters -->
+           data-search="true"> <!-- Enables the search input -->
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Dealer Name</th>
-                <th>City</th>
-                <th>Address</th>
-                <th>Zip</th>
-                <th data-field="state" data-filter-control="select">State</th>
+                <th data-field="id" data-sortable="true" data-visible="false">ID</th>
+                <th data-field="dealer_name" data-sortable="true">Dealer Name</th>
+                <th data-field="city" data-sortable="true">City</th>
+                <th data-field="address" data-sortable="true">Address</th>
+                <th data-field="zip" data-sortable="true">Zip</th>
+                <th data-field="state" data-filter-control="select" data-sortable="true">State</th>
             </tr>
         </thead>
         <tbody>
@@ -29,8 +34,10 @@
 
 {% block javascript %}
 <script>
-  $(function() {
-    $('#table').bootstrapTable()
-  })
+    $(function() {
+        $('#table').bootstrapTable({
+            // Initialize the bootstrap table with filter control
+        });
+    });
 </script>
 {% endblock %}
