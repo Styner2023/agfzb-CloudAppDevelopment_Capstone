@@ -17,10 +17,14 @@
 </head>
 
 <body>
-    <!--Add a nav bar here -->
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-        <div class="container-fluid">
-            <ul class="navbar-nav">
+    <!-- Updated Navigation Bar with Dropdown -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Main</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
                     <a class="nav-link {%if 'Dealership' in title %}active{%endif%}" href="/djangoapp/">Home</a>
                 </li>
@@ -31,8 +35,17 @@
                     <a class="nav-link {%if 'contact' in title %}active{%endif%}" href="/djangoapp/contact/">Contact</a>
                 </li>
             </ul>
-            <ul class="navbar-nav">
-                {% if not user.is_authenticated %}
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ user.first_name }} ({{ user.username }})
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" href="{% url 'djangoapp:logout' %}">Logout</a>
+                    </div>
+                </li>
+                {% else %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" id="navbardrop" data-toggle="dropdown">Auth</a>
                     <ul class="dropdown-menu">
@@ -40,21 +53,20 @@
                         <li><a class="dropdown-item" href={% url 'djangoapp:register' %}>Register</a></li>
                     </ul>
                 </li>
-                {% else %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" id="navbardrop" data-toggle="dropdown">User: {{ user.username|title }}</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'djangoapp:logout' %}">Logout</a></li>
-                    </ul>
-                </li>
                 {% endif %}
             </ul>
         </div>
     </nav>
-    <!--Add Content here -->
+
+    <!-- Content Placeholder -->
     <div class="container pt-3">
         {% block content %}{% endblock %}
     </div>
+
+    <!-- Your existing scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 
 </html>
