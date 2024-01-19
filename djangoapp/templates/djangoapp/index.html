@@ -8,7 +8,24 @@
             <a class="navbar-brand" href="#">Main</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-            <!-- ... -->
+            {% if user.is_authenticated %}
+                <li>
+                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                    <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                </li>
+            {% else %}
+                <li>
+                    <form class="form-inline" action="{% url 'djangoapp:login' %}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Username" name="username">
+                            <input type="password" class="form-control" placeholder="Password" name="psw">
+                            <button class="btn btn-primary" type="submit">Login</button>
+                            <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                        </div>
+                    </form>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </nav>
@@ -90,7 +107,9 @@
     </script>
 {% endblock %}
 
-<!-- Navigation Bar -->
+<!-- FILEPATH: /Users/stynerstiner/Downloads/🛜IBM /agfzb-CloudAppDevelopment_Capstone-1/djangoapp/templates/djangoapp/index.html -->
+<!-- BEGIN: ed8c6549bwf9 -->
+<!--
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -119,8 +138,9 @@
     </div>
 </nav>
 
-<!-- Page Heading -->
 <center><h1>Best Car Dealership Website</h1></center>
+-->
+<!-- END: ed8c6549bwf9 -->
 
 <!--
 {% extends "djangoapp/layout.html" %}

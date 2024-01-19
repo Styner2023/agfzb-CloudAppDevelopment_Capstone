@@ -39,12 +39,57 @@ def add_review(request, dealer_id):
     if request.method == 'GET':
         cars = Car.objects.filter(dealer_id=dealer_id)
         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
-    
+
     if request.method == 'POST':
-        # Process POST request
-        return process_add_review_post(request, dealer_id)
+        purchase_check = request.POST.get('purchasecheck')
+        content = request.POST.get('content')
+        purchasedate = request.POST.get('purchasedate')
+        car_id = request.POST.get('car')
+
+        if not (purchase_check and content and purchasedate and car_id):
+            return HttpResponseBadRequest('Invalid or missing POST data')
+
+        try:
+            purchase_date = datetime.strptime(purchasedate, '%m/%d/%Y').isoformat()
+            car = Car.objects.get(id=car_id)
+
+            review = {
+                'dealership': dealer_id,
+                'name': request.user.username,
+                'purchase': purchase_check,
+                'review': content,
+                'purchase_date': purchase_date,
+                'car_make': car.make.name,
+                'car_model': car.name,
+                'car_year': car.year.year,
+            }
+
+            json_payload = {"review": review}
+            review_post_url = (
+                "https://us-south.functions.appdomain.cloud/api/v1/web/"
+                "54ee907b-434c-4f03-a1b3-513c235fbeb4/default/review-post"
+            )
+
+            response = requests.post(review_post_url, json=json_payload, timeout=10)
+            if response.status_code == 200:
+                return redirect('djangoapp:dealer_details', dealer_id=dealer_id)
+
+            logger.error('Failed to post review. Status code: %s', response.status_code)
+            return HttpResponse(f'Failed to post review. Status code: {response.status_code}',
+                                status=response.status_code)
+
+        except Car.DoesNotExist:
+            logger.error('Invalid car ID')
+            return HttpResponseBadRequest('Invalid car ID')
+        except ValueError:
+            logger.error('Invalid date format')
+            return HttpResponseBadRequest('Invalid date format')
+        except requests.exceptions.RequestException as e:
+            logger.error('Error posting review: %s', str(e))
+            return HttpResponse(f'Error posting review: {str(e)}', status=500)
 
     return HttpResponseBadRequest('Invalid HTTP method')
+
 
 def process_add_review_post(request, dealer_id):
     """Process POST request for add_review."""
@@ -80,7 +125,7 @@ def process_add_review_post(request, dealer_id):
         response = requests.post(review_post_url, json=json_payload, timeout=10)
         if response.status_code == 200:
             return redirect('djangoapp:dealer_details', dealer_id=dealer_id)
-        
+
         logger.error('Failed to post review. Status code: %s', response.status_code)
         return HttpResponse(f'Failed to post review. Status code: {response.status_code}',
                             status=response.status_code)
@@ -118,6 +163,27 @@ def get_dealerships(request):
     context['dealership_list'] = dealerships
     return render(request, 'djangoapp/index.html', context)
 
+def filter_dealerships_by_state(request):
+    """Filter dealerships by state."""
+    if request.method == 'GET':
+        state = request.GET.get('state')
+        if state:
+            dealerships = CarDealerModel.objects.filter(state=state)
+            return render(request, 'djangoapp/filter_dealerships.html', {'dealerships': dealerships})
+        else:
+            return HttpResponseBadRequest('Missing state parameter')
+    return HttpResponseNotAllowed('Invalid HTTP method')
+
+def submit_review(request):
+    """Submit a review for a dealership or dealer."""
+    if request.method == 'POST':
+        # Process the form submission
+        # Retrieve the necessary data from the POST request
+        # Perform any necessary validation
+        # Save the review to the database or send it to an external service
+        return HttpResponse('Review submitted successfully')
+    return HttpResponseNotAllowed('Invalid HTTP method')
+
 # ... [other imports and view functions]
 
 def get_dealer_details(request, dealer_id):
@@ -128,7 +194,7 @@ def get_dealer_details(request, dealer_id):
 
         # Fetch reviews for the specific dealer using the get_dealer_reviews_from_cf method
         dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
-        
+
         # Add sentiment analysis to each review
         for review in dealer_reviews:
             review['sentiment'] = analyze_review_sentiments(review['review'])
