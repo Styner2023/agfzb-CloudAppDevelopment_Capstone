@@ -9,9 +9,20 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from .models import Car, CarDealerModel
+import requests
+import logging
+from datetime import datetime
 from djangoapp.models import CarDealerModel, Car  # Import the CarDealerModel and Car models
 
 # Logger setup
+logger = logging.getLogger(__name__)
+
+
 logger = logging.getLogger(__name__)
 
 def about(request):
@@ -28,10 +39,9 @@ def login_view(request):
         if user is not None:
             login(request, user)
             return redirect('index')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
-    else:
-        return render(request, 'login.html')
+        return render(request, 'login.html', {'error': 'Invalid username or password'})
+
+    return render(request, 'login.html')
 
 @login_required
 def add_review(request, dealer_id):
@@ -156,23 +166,19 @@ def view_dealership(request, dealer_id):
     return render(request, 'djangoapp/view_dealership.html', {'dealership': dealership})
 
 def get_dealerships(request):
-    context = {}
     # Use the Port 3000 URL that points to your dealership data endpoint
     dealerships_url = "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealerships = get_dealers_from_cf(dealerships_url)
-    context['dealership_list'] = dealerships
+    context = {'dealership_list': dealerships}
     return render(request, 'djangoapp/index.html', context)
 
 def filter_dealerships_by_state(request):
     """Filter dealerships by state."""
-    if request.method == 'GET':
-        state = request.GET.get('state')
-        if state:
-            dealerships = CarDealerModel.objects.filter(state=state)
-            return render(request, 'djangoapp/filter_dealerships.html', {'dealerships': dealerships})
-        else:
-            return HttpResponseBadRequest('Missing state parameter')
-    return HttpResponseNotAllowed('Invalid HTTP method')
+    state = request.GET.get('state', None)
+    if state:
+        dealerships = CarDealerModel.objects.filter(state=state)
+        return render(request, 'djangoapp/filter_dealerships.html', {'dealerships': dealerships})
+    return HttpResponseBadRequest('Missing state parameter')
 
 def submit_review(request):
     """Submit a review for a dealership or dealer."""
@@ -192,18 +198,12 @@ def get_dealer_details(request, dealer_id):
         if not dealer_id:
             return HttpResponseBadRequest('Missing dealer_id')
 
-        # Fetch reviews for the specific dealer using the get_dealer_reviews_from_cf method
         dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
 
-        # Add sentiment analysis to each review
         for review in dealer_reviews:
             review['sentiment'] = analyze_review_sentiments(review['review'])
 
-        # Create an empty context dictionary
-        context = {}
-        # Add the reviews list to the context dictionary
-        context['dealer_reviews'] = dealer_reviews
-        # Return the render response with 'dealer_details.html' and the context containing the reviews
+        context = {'dealer_reviews': dealer_reviews}
         return render(request, 'djangoapp/dealer_details.html', context)
 
     return HttpResponseNotAllowed('Invalid HTTP method')
@@ -270,16 +270,18 @@ def get_dealers_from_cf(dealerships_url):
     response = requests.get(dealerships_url, timeout=10)
     if response.status_code == 200:
         dealerships = response.json()
-        logger.info(f"Dealerships received: {dealerships}")
+        logger.info("Dealerships received: %s", dealerships)
         return dealerships
-    logger.error(f"Failed to receive dealerships, status code {response.status_code}")
+    logger.error("Failed to receive dealerships, status code %s", response.status_code)
     return []
 
 def list_dealerships(request):
     # Fetch the list of dealerships from your database or wherever you store the data
-    dealerships = Dealer.objects.all()  # Modify this based on your data retrieval logic
+    dealerships = CarDealerModel.objects.all()  # Modify this based on your data retrieval logic
 
     # Render the template with the list of dealerships
+    return render(request, 'djangoapp/list_dealerships.html', {'dealerships': dealerships})
+
     return render(request, 'djangoapp/list_dealerships.html', {'dealerships': dealerships})
 
     # Other view functions...
