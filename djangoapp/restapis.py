@@ -114,7 +114,7 @@ def analyze_review_sentiments(dealerreview):
     Analyze the sentiment of a review text using Watson NLU.
     """
     text = dealerreview.review
-    url = WATSON_NLU_URL + '/v1/analyze'
+    url = f'{WATSON_NLU_URL}/v1/analyze'
     params = {
         'text': text,
         'version': '2021-08-01',
@@ -123,12 +123,11 @@ def analyze_review_sentiments(dealerreview):
     }
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + WATSON_NLU_API_KEY
+        'Authorization': f'Basic {WATSON_NLU_API_KEY}',
     }
     try:
         response = post_request(url, json_payload=params, headers=headers)
-        sentiment = response.get('sentiment', {}).get('label', 'Unknown')
-        return sentiment
+        return response.get('sentiment', {}).get('label', 'Unknown')
     except Exception as e:
         print(f"Error in analyze_review_sentiments: {e}")
         return 'Unknown'

@@ -21,17 +21,15 @@ def about(request):
     return render(request, 'djangoapp/about.html')
 
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('index')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
-    else:
+    if request.method != 'POST':
         return render(request, 'login.html')
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return render(request, 'login.html', {'error': 'Invalid username or password'})
+    login(request, user)
+    return redirect('index')
 
 @login_required
 def add_review(request, dealer_id):
@@ -111,36 +109,32 @@ def view_dealership(request, dealer_id):
     return render(request, 'djangoapp/view_dealership.html', {'dealership': dealership})
 
 def get_dealerships(request):
-    context = {}
     # Use the Port 3000 URL that points to your dealership data endpoint
     dealerships_url = "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealerships = get_dealers_from_cf(dealerships_url)
-    context['dealership_list'] = dealerships
+    context = {'dealership_list': dealerships}
     return render(request, 'djangoapp/index.html', context)
 
 # ... [other imports and view functions]
 
 def get_dealer_details(request, dealer_id):
     """Get details of a car dealer and their reviews."""
-    if request.method == 'GET':
-        if not dealer_id:
-            return HttpResponseBadRequest('Missing dealer_id')
+    if request.method != 'GET':
+        return HttpResponseNotAllowed('Invalid HTTP method')
+    if not dealer_id:
+        return HttpResponseBadRequest('Missing dealer_id')
 
-        # Fetch reviews for the specific dealer using the get_dealer_reviews_from_cf method
-        dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
-        
-        # Add sentiment analysis to each review
-        for review in dealer_reviews:
-            review['sentiment'] = analyze_review_sentiments(review['review'])
+    # Fetch reviews for the specific dealer using the get_dealer_reviews_from_cf method
+    dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
+
+    # Add sentiment analysis to each review
+    for review in dealer_reviews:
+        review['sentiment'] = analyze_review_sentiments(review['review'])
 
         # Create an empty context dictionary
-        context = {}
-        # Add the reviews list to the context dictionary
-        context['dealer_reviews'] = dealer_reviews
-        # Return the render response with 'dealer_details.html' and the context containing the reviews
-        return render(request, 'djangoapp/dealer_details.html', context)
-
-    return HttpResponseNotAllowed('Invalid HTTP method')
+    context = {'dealer_reviews': dealer_reviews}
+    # Return the render response with 'dealer_details.html' and the context containing the reviews
+    return render(request, 'djangoapp/dealer_details.html', context)
 
 '''
 ... [rest of your view functions]
@@ -169,9 +163,7 @@ def get_dealer_reviews_from_cf(dealer_id):
     )
     headers = {'Authorization': 'Bearer KidOOw8m-hso_lc2AgTMLdxmudJdgaJAe-dewXr62x1L'}
     response = requests.get(dealer_reviews_url, headers=headers, timeout=10)
-    if response.status_code == 200:
-        return response.json()
-    return []
+    return response.json() if response.status_code == 200 else []
 
 def analyze_review_sentiments(review_text):
     """Analyzes the sentiment of a review text using Watson NLU."""

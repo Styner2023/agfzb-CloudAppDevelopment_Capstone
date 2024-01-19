@@ -20,17 +20,15 @@ def about(request):
     return render(request, 'djangoapp/about.html')
 
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('index')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
-    else:
+    if request.method != 'POST':
         return render(request, 'login.html')
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return render(request, 'login.html', {'error': 'Invalid username or password'})
+    login(request, user)
+    return redirect('index')
 
 @login_required
 def add_review(request, dealer_id):
@@ -111,14 +109,13 @@ def view_dealership(request, dealer_id):
 
 def get_dealerships(request):
     logger.info("get_dealerships view called")  # Log when the function is called
-    context = {}
     dealerships_url = 'https://kstiner101-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get'
     dealerships = get_dealers_from_cf(dealerships_url)
     if dealerships:
         logger.info(f"Dealerships fetched successfully: {dealerships}")  # Log fetched data
     else:
         logger.error("No dealerships fetched")
-    context['dealership_list'] = dealerships
+    context = {'dealership_list': dealerships}
     return render(request, 'djangoapp/index.html', context)
 
 
@@ -145,9 +142,7 @@ def get_dealer_reviews_from_cf(dealer_id):
     )
     headers = {'Authorization': 'Bearer KidOOw8m-hso_lc2AgTMLdxmudJdgaJAe-dewXr62x1L'}
     response = requests.get(dealer_reviews_url, headers=headers, timeout=10)
-    if response.status_code == 200:
-        return response.json()
-    return []
+    return response.json() if response.status_code == 200 else []
 
 def analyze_review_sentiments(review_text):
     """Analyzes the sentiment of a review text using Watson NLU."""
