@@ -45,10 +45,7 @@ def main(param_dict):
     # Retrieve matching reviews
     docs = db_connection.get_query_result(selector)
 
-    # Convert the query result to a list of dictionaries
-    reviews = list(docs)
-
-    return reviews
+    return list(docs)
 
 
 credentials = {

@@ -27,7 +27,7 @@ class CarDealerModel(models.Model):
     zip = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
-        return "Dealer name: " + self.full_name
+        return f"Dealer name: {self.full_name}"
 
 # Car Model model with fields: Make, Name, Dealer ID, Type, Year, Engine, Price, MPG, etc.
 class CarModel(models.Model):
