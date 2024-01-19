@@ -1,7 +1,22 @@
 {% extends "djangoapp/layout.html" %}
 
 {% block content %}
-    <!-- Bootstrap Table with State Filter -->
+<!-- Navigation Bar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Main</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <!-- ... -->
+        </ul>
+    </div>
+</nav>
+
+<!-- Page Heading -->
+<center><h1>Best Car Dealership Website</h1></center>
+   
+<!-- Bootstrap Table with State Filter -->
     <table class="table"
            id="table"
            data-toggle="table"
@@ -31,6 +46,17 @@
             {% endfor %}
         </tbody>
     </table>
+{% block javascript %}
+<script>
+    $(function() {
+        $('#table').bootstrapTable({
+            filterControl: true,  // This enables the filter control
+            filterShowClear: true,  // This adds a clear button to clear filters
+            search: true  // This enables the search input
+        });
+    });
+</script>
+{% endblock %}
 
     <!-- Dealer's Table (Static) -->
     <!-- Consider integrating with your Django backend if dynamic data is needed -->
