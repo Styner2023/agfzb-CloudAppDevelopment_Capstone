@@ -8,6 +8,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Car, CarDealerModel
 
 # Logger setup
@@ -157,25 +158,6 @@ def get_dealer_details(request, dealer_id):
         return render(request, 'djangoapp/dealer_details.html', context)
 
     return HttpResponseNotAllowed('Invalid HTTP method')
-
-'''
-... [rest of your view functions]
-
-# def get_dealer_details(request, dealer_id):
-#     """Get details of a car dealer and their reviews."""
-#     if request.method == 'GET':
-#         if not dealer_id:
-#             return HttpResponseBadRequest('Missing dealer_id')
-
-#         dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
-#         for review in dealer_reviews:
-#             review['sentiment'] = analyze_review_sentiments(review['review'])
-
-#         context = {'dealer_reviews': dealer_reviews}
-#         return render(request, 'djangoapp/dealer_details.html', context)
-
-#     return HttpResponseNotAllowed('Invalid HTTP method')
-'''
 
 def get_dealer_reviews_from_cf(dealer_id):
     """Retrieves dealer reviews from a cloud function."""
