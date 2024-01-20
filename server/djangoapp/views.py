@@ -132,6 +132,7 @@ def get_dealer_details(request, dealer_id):
         for review in dealer_reviews:
             review['sentiment'] = analyze_review_sentiments(review['review'])
 
+        context = {}
         context = {'dealer_reviews': dealer_reviews}
         return render(request, 'djangoapp/dealer_details.html', context)
 
