@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="table-responsive">
-    <table class="table" id="dealerTable">
+    <table class="table" id="dealerTable" data-filter-control="true">
       <thead>
         <tr>
           <th>ID</th>
@@ -10,7 +10,7 @@
           <th>City</th>
           <th>Address</th>
           <th>Zip</th>
-          <th>State</th>
+          <th data-filter-control="select" data-field="state">State</th>
         </tr>
       </thead>
       <tbody>
@@ -34,9 +34,8 @@
 {% block javascript %}
 <script>
   $(document).ready(function() {
-    $('#dealerTable').bootstrapTable({
-      // Add any additional Bootstrap table options here
-    });
+    alert('Hello')
+    $('#dealerTable').bootstrapTable()
   });
 </script>
 {% endblock %}

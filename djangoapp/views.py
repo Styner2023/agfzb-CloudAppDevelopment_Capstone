@@ -121,7 +121,7 @@ def get_dealerships(request):
     )
     dealerships = get_dealers_from_cf(dealerships_url)
     context = {'dealership_list': dealerships}
-    return render(request, 'djangoapp/index.html', context)
+    # return render(request, 'djangoapp/index.html', context)
 
 def filter_dealerships_by_state(request):
     """Filter dealerships by state."""
