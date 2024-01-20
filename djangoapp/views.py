@@ -1,4 +1,3 @@
-# This module contains views for adding reviews and getting dealer details in a Django application.
 from datetime import datetime
 import logging
 import requests
@@ -9,20 +8,9 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
 from .models import Car, CarDealerModel
-import requests
-import logging
-from datetime import datetime
-from djangoapp.models import CarDealerModel, Car  # Import the CarDealerModel and Car models
 
 # Logger setup
-logger = logging.getLogger(__name__)
-
-
 logger = logging.getLogger(__name__)
 
 def about(request):
@@ -32,6 +20,9 @@ def about(request):
     return render(request, 'djangoapp/about.html')
 
 def login_view(request):
+    """
+    Logs in a user.
+    """
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -40,7 +31,6 @@ def login_view(request):
             login(request, user)
             return redirect('index')
         return render(request, 'login.html', {'error': 'Invalid username or password'})
-
     return render(request, 'login.html')
 
 @login_required
@@ -50,56 +40,11 @@ def add_review(request, dealer_id):
         cars = Car.objects.filter(dealer_id=dealer_id)
         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
 
-    if request.method == 'POST':
-        purchase_check = request.POST.get('purchasecheck')
-        content = request.POST.get('content')
-        purchasedate = request.POST.get('purchasedate')
-        car_id = request.POST.get('car')
+    elif request.method == 'POST':
+        return process_add_review_post(request, dealer_id)
 
-        if not (purchase_check and content and purchasedate and car_id):
-            return HttpResponseBadRequest('Invalid or missing POST data')
-
-        try:
-            purchase_date = datetime.strptime(purchasedate, '%m/%d/%Y').isoformat()
-            car = Car.objects.get(id=car_id)
-
-            review = {
-                'dealership': dealer_id,
-                'name': request.user.username,
-                'purchase': purchase_check,
-                'review': content,
-                'purchase_date': purchase_date,
-                'car_make': car.make.name,
-                'car_model': car.name,
-                'car_year': car.year.year,
-            }
-
-            json_payload = {"review": review}
-            review_post_url = (
-                "https://us-south.functions.appdomain.cloud/api/v1/web/"
-                "54ee907b-434c-4f03-a1b3-513c235fbeb4/default/review-post"
-            )
-
-            response = requests.post(review_post_url, json=json_payload, timeout=10)
-            if response.status_code == 200:
-                return redirect('djangoapp:dealer_details', dealer_id=dealer_id)
-
-            logger.error('Failed to post review. Status code: %s', response.status_code)
-            return HttpResponse(f'Failed to post review. Status code: {response.status_code}',
-                                status=response.status_code)
-
-        except Car.DoesNotExist:
-            logger.error('Invalid car ID')
-            return HttpResponseBadRequest('Invalid car ID')
-        except ValueError:
-            logger.error('Invalid date format')
-            return HttpResponseBadRequest('Invalid date format')
-        except requests.exceptions.RequestException as e:
-            logger.error('Error posting review: %s', str(e))
-            return HttpResponse(f'Error posting review: {str(e)}', status=500)
-
-    return HttpResponseBadRequest('Invalid HTTP method')
-
+    else:
+        return HttpResponseBadRequest('Invalid HTTP method')
 
 def process_add_review_post(request, dealer_id):
     """Process POST request for add_review."""
@@ -166,8 +111,13 @@ def view_dealership(request, dealer_id):
     return render(request, 'djangoapp/view_dealership.html', {'dealership': dealership})
 
 def get_dealerships(request):
+    """
+    Retrieves the list of dealerships.
+    """
     # Use the Port 3000 URL that points to your dealership data endpoint
-    dealerships_url = "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    dealerships_url = (
+        "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    )
     dealerships = get_dealers_from_cf(dealerships_url)
     context = {'dealership_list': dealerships}
     return render(request, 'djangoapp/index.html', context)
@@ -175,7 +125,7 @@ def get_dealerships(request):
 def filter_dealerships_by_state(request):
     """Filter dealerships by state."""
     state = request.GET.get('state', None)
-    if state:
+    if state is not None:
         dealerships = CarDealerModel.objects.filter(state=state)
         return render(request, 'djangoapp/filter_dealerships.html', {'dealerships': dealerships})
     return HttpResponseBadRequest('Missing state parameter')
@@ -211,20 +161,20 @@ def get_dealer_details(request, dealer_id):
 '''
 ... [rest of your view functions]
 
-def get_dealer_details(request, dealer_id):
-    """Get details of a car dealer and their reviews."""
-    if request.method == 'GET':
-        if not dealer_id:
-            return HttpResponseBadRequest('Missing dealer_id')
+# def get_dealer_details(request, dealer_id):
+#     """Get details of a car dealer and their reviews."""
+#     if request.method == 'GET':
+#         if not dealer_id:
+#             return HttpResponseBadRequest('Missing dealer_id')
 
-        dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
-        for review in dealer_reviews:
-            review['sentiment'] = analyze_review_sentiments(review['review'])
+#         dealer_reviews = get_dealer_reviews_from_cf(dealer_id)
+#         for review in dealer_reviews:
+#             review['sentiment'] = analyze_review_sentiments(review['review'])
 
-        context = {'dealer_reviews': dealer_reviews}
-        return render(request, 'djangoapp/dealer_details.html', context)
+#         context = {'dealer_reviews': dealer_reviews}
+#         return render(request, 'djangoapp/dealer_details.html', context)
 
-    return HttpResponseNotAllowed('Invalid HTTP method')
+#     return HttpResponseNotAllowed('Invalid HTTP method')
 '''
 
 def get_dealer_reviews_from_cf(dealer_id):
@@ -267,6 +217,9 @@ def get_dealer_by_id(request, dealer_id):
         return HttpResponse('Dealer not found', status=404)
 
 def get_dealers_from_cf(dealerships_url):
+    """
+    Retrieves the list of dealerships from a cloud function.
+    """
     response = requests.get(dealerships_url, timeout=10)
     if response.status_code == 200:
         dealerships = response.json()
@@ -276,24 +229,30 @@ def get_dealers_from_cf(dealerships_url):
     return []
 
 def list_dealerships(request):
+    """
+    Lists all the dealerships.
+    """
     # Fetch the list of dealerships from your database or wherever you store the data
     dealerships = CarDealerModel.objects.all()  # Modify this based on your data retrieval logic
 
-    # Render the template with the list of dealerships
     return render(request, 'djangoapp/list_dealerships.html', {'dealerships': dealerships})
-
-    return render(request, 'djangoapp/list_dealerships.html', {'dealerships': dealerships})
-
     # Other view functions...
 
 def some_function(request):
+    """
+    Some function.
+    """
     if request.method == 'POST':
         # some code here
         return HttpResponse('POST request received')
+    return HttpResponse('')
 
 # More view functions...
 
 def register(request):
+    """
+    Registers a user.
+    """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
