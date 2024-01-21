@@ -28,9 +28,9 @@ def login_view(request):
             login(request, user)
             return redirect('index')
         else:
-            return render(request, 'login.html', {'error': 'Invalid username or password'})
+            return render(request, 'djangoapp/login.html', {'error': 'Invalid username or password'})
     else:
-        return render(request, 'login.html')
+        return render(request, 'djangoapp/login.html')
 
 @login_required
 def add_review(request, dealer_id):
@@ -132,7 +132,7 @@ def get_dealer_details(request, dealer_id):
         for review in dealer_reviews:
             review['sentiment'] = analyze_review_sentiments(review['review'])
 
-        context = {}
+        
         context = {'dealer_reviews': dealer_reviews}
         return render(request, 'djangoapp/dealer_details.html', context)
 

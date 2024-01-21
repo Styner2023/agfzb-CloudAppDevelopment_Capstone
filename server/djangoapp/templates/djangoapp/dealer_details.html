@@ -15,7 +15,9 @@
         <a href="{% url 'djangoapp:another_page' %}">Another Page</a>
         
         {% if user.is_authenticated %}
-            <a href="{% url 'add_review' %}">Add Review</a>
+   <!-- Link to add_review view -->
+   <a href="{% url 'djangoapp:add_review' dealer_id=dealer_id %}" class="btn btn-primary">Add Review</a>
+            <!-- <a href="{% url 'add_review' %}">Add Review</a> -->
             <!-- <a href="{% url 'djangoapp:add_review' %}">Add Review</a> -->
         {% endif %}
     </nav>
