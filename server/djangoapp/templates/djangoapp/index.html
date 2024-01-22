@@ -1,42 +1,45 @@
-{% extends "djangoapp/layout.html" %}
-
-{% block content %}
-  <div class="table-responsive">
-    <table class="table" id="dealerTable" data-filter-control="true">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Dealer Name</th>
-          <th>City</th>
-          <th>Address</th>
-          <th>Zip</th>
-          <th data-filter-control="select" data-field="state">State</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for dealer in dealership_list %}
-          <tr>
-            <td>{{ dealer.id }}</td>
-            <td><a href="{% url 'djangoapp:dealer_details' dealer.id %}">{{ dealer.full_name }}</a></td>
-            <td>{{ dealer.city }}</td>
-            <td>{{ dealer.address }}</td>
-            <td>{{ dealer.zip }}</td>
-            <td>{{ dealer.state }}</td>
-          </tr>
-        {% empty %}
-          <tr><td colspan="6">No dealerships available.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-{% endblock %}
-
-{% block javascript %}
-<script>
-  $(document).ready(function() {
-    alert('Hello')
-    $('#dealerTable').bootstrapTable()
-  });
-</script>
-{% endblock %}
-
+                                                                                                                                 
+ {% extends "djangoapp/layout.html" %}                                                                                            
+                                                                                                                                  
+ {% block content %}                                                                                                              
+   <div class="table-responsive">                                                                                                 
+     <table class="table" id="dealerTable" data-filter-control="true">                                                            
+       <thead>                                                                                                                    
+         <tr>                                                                                                                     
+           <th>ID</th>                                                                                                            
+           <th>Dealer Name</th>                                                                                                   
+           <th>City</th>                                                                                                          
+           <th>Address</th>                                                                                                       
+           <th>Zip</th>                                                                                                           
+           <th data-filter-control="select" data-field="state">State</th>                                                         
+         </tr>                                                                                                                    
+       </thead>                                                                                                                   
+       <tbody>                                                                                                                    
+         {% for dealer in dealership_list %}                                                                                      
+           <tr>                                                                                                                   
+             <td>{{ dealer.id }}</td>                                                                                             
+             <td><a href="{% url 'djangoapp:dealer_details' dealer.id %}">{{ dealer.full_name }}</a></td>                         
+             <td>{{ dealer.city }}</td>                                                                                           
+             <td>{{ dealer.address }}</td>                                                                                        
+             <td>{{ dealer.zip }}</td>                                                                                            
+             <td>{{ dealer.state }}</td>                                                                                          
+           </tr>                                                                                                                  
+         {% empty %}                                                                                                              
+           <tr><td colspan="6">No dealerships available.</td></tr>                                                                
+         {% endfor %}                                                                                                             
+       </tbody>                                                                                                                   
+     </table>                                                                                                                     
+   </div>                                                                                                                         
+ {% endblock %}                                                                                                                   
+                                                                                                                                  
+ {% block javascript %}                                                                                                           
+ <script>                                                                                                                         
+   $(document).ready(function() {                       
+    alert('Hello')                                                                           
+     $('#dealerTable').bootstrapTable({                                                                                           
+       filterControl: true,                                                                                                       
+       filterShowClear: true                                                                                                      
+     });                                                                                                                          
+   });                                                                                                                            
+ </script>                                                                                                                        
+ {% endblock %} 
