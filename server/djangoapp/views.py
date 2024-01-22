@@ -122,19 +122,18 @@ def get_dealerships(request):
     context['dealership_list'] = dealerships
     return render(request, 'djangoapp/index.html', context)
 
- def get_dealer_details(request, dealer_id):                                                                                      
-     """Get details of a car dealer and their reviews."""                                                                         
-     if request.method == 'GET':                                                                                                  
-         if not dealer_id:                                                                                                        
-             return HttpResponseBadRequest('Missing dealer_id')                                                                   
-                                                                                                                                  
-     context = {}                                                                                                                 
-     context['reviews'] = get_dealer_reviews_from_cf(dealer_id)                                                                   
-     for review in context['reviews']:                                                                                            
-         review['sentiment'] = analyze_review_sentiments(review['review'])                                                        
-     dealer = CarDealerModel.objects.get(id=dealer_id)                                                                            
-     context['dealer'] = dealer                                                                                                   
-     return render(request, 'djangoapp/dealer_details.html', context)  
+def get_dealer_details(request, dealer_id):
+    """Get details of a car dealer and their reviews."""
+    if request.method == 'GET':
+        if not dealer_id:
+            return HttpResponseBadRequest('Missing dealer_id')
+        context = {}
+        context['reviews'] = get_dealer_reviews_from_cf(dealer_id)
+        for review in context['reviews']:
+            review['sentiment'] = analyze_review_sentiments(review['review'])
+        dealer = CarDealerModel.objects.get(id=dealer_id)
+        context['dealer'] = dealer
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 def get_dealer_reviews_from_cf(dealer_id):
     """Retrieves dealer reviews from a cloud function."""
