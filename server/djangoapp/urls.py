@@ -16,7 +16,7 @@ urlpatterns = [
     path('', views.get_dealerships, name='index'),
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
-    path('dealer/<int:dealer_id>/', views.get_dealer_by_id, name='dealer_details'),
+    path('dealer/<int:dealer_id>/', views.get_dealer_details, name='dealer_details'),
     path('dealer/<int:dealer_id>/add-review/', views.add_review, name="add_review"),
     path('dealership/<int:dealer_id>/', views.view_dealership, name='view_dealership'),
     path('login/', views.login_view, name='login'),  # login_view is the view function for login
@@ -25,6 +25,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+# path('dealer/<int:dealer_id>/', views.get_dealer_by_id, name='dealer_details'),
+# path('dealer/<int:dealer_id>/', views.get_dealer_details, name='dealer_details'),
 # https://kstiner101-8000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/djangoapp/
 # https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get
-

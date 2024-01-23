@@ -1,19 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dealership Review</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-<body>
-    {% extends "djangoapp/layout.html" %}
-
-    {% block content %}
-    <h1>Welcome to the Dealership Review Page</h1>
-    <p>Here you can find reviews for our dealerships and add your own.</p>
-    <!-- More content can be added here -->
-    {% endblock %}
+{% extends "djangoapp/layout.html" %}                                                                                                                                 
+                                                                                                                                                                       
+{% block content %}                                                                                                                                                   
+<div class="container">                                                                                                                                               
+    <h1>Welcome to the Dealership Review Page</h1>                                                                                                                    
+    <p>Here you can find reviews for our dealerships and add your own.</p> 
 
     {% if user.is_authenticated %}
     <nav>
@@ -45,8 +35,9 @@
             {% endfor %}
         </div>
     </div>
+    {% endblock %}
 
-    <table class="table" id="table" data-filter-control="true">
+    <!-- <table class="table" id="table" data-filter-control="true">
         <thead>
             <tr>
                 <th>ID</th>
@@ -69,17 +60,14 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table> -->
 
     {% block javascript %}
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         $(function() {
             $('#table').bootstrapTable();
         });
-    </script>
+    </script> -->
     {% endblock %}
-</body>
-</html>
-      
