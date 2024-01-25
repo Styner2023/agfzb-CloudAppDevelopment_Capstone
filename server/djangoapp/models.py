@@ -12,34 +12,34 @@ class CarMake(models.Model):
     def __str__(self):
         return str(self.name)
 
-
-# Car Dealer model with fields: Name, City, State, ST, etc.
-class CarDealerModel(models.Model):
-    name = models.CharField(max_length=255)
-    city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
-    st = models.CharField(max_length=255)
-    address = models.CharField(max_length=255, null=True, blank=True)
-    full_name = models.CharField(max_length=255, default='Dealer Name')
-    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    long = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    short_name = models.CharField(max_length=255, default='Short Name')
-    zip = models.CharField(max_length=10, null=True, blank=True)
+class CarDealer(models.Model):
+    address = models.CharField(max_length=100)
+    city = models.CharField(max_length=50)
+    id = models.IntegerField(primary_key=True)
+    lat = models.FloatField()
+    long = models.FloatField()
+    st = models.CharField(max_length=2)
+    zip = models.CharField(max_length=10)
+    full_name = models.CharField(max_length=100)
+    short_name = models.CharField(max_length=50)
 
     def __str__(self):
         return "Dealer name: " + self.full_name
-
-# Car Model model with fields: Make, Name, Dealer ID, Type, Year, Engine, Price, MPG, etc.
 class CarModel(models.Model):
     SEDAN = 'SD'
     SUV = 'SV'
     WAGON = 'WG'
     CAR_TYPES = [(SEDAN, 'Sedan'), (SUV, 'SUV'), (WAGON, 'Wagon')]
 
-    make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    dealer = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE)
-    car_type = models.CharField(max_length=2, choices=CAR_TYPES, default=SEDAN)
+    # dealer = models.ForeignKey(CarDealer, on_delete=models.CASCADE)
+    id = models.IntegerField(default=1, primary_key=True)
+    dealer_id = models.IntegerField()  # This will store the CarDealer id
+    type = models.CharField(
+        null=False,
+        max_length=50,
+        choices=CAR_TYPES,
+        default=SEDAN
+    )
     year = models.IntegerField()
     engine = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -53,7 +53,7 @@ class DealerReview(models.Model):
     """
     Represents a review of a car dealership.
     """
-    dealership = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE)
+    # dealership = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     purchase = models.BooleanField()
     review = models.TextField()
@@ -71,7 +71,7 @@ class DealerReview(models.Model):
 class Car(models.Model):
     make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
     model = models.ForeignKey(CarModel, on_delete=models.CASCADE)
-    dealer = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE) 
+    # dealer = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE) 
     year = models.IntegerField()
     color = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -79,5 +79,3 @@ class Car(models.Model):
 
     def __str__(self):
         return f'{self.make} {self.model} ({self.year})'
-
-

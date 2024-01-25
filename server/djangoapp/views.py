@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
-from djangoapp.models import CarDealerModel, Car  # Import the CarDealerModel and Car models
+from .models import CarDealer, Car  # Import the updated CarDealer and Car models
 
 # Logger setup
 logger = logging.getLogger(__name__)
@@ -103,8 +103,8 @@ def contact(request):
 def view_dealership(request, dealer_id):
     """View a specific car dealership."""
     try:
-        dealership = CarDealerModel.objects.get(id=dealer_id)
-    except CarDealerModel.DoesNotExist:
+        dealership = CarDealer.objects.get(id=dealer_id)
+    except CarDealer.DoesNotExist:
         return HttpResponseBadRequest('Dealership not found')
 
     return render(request, 'djangoapp/view_dealership.html', {'dealership': dealership})
@@ -131,9 +131,12 @@ def get_dealer_details(request, dealer_id):
         context['reviews'] = get_dealer_reviews_from_cf(dealer_id)
         for review in context['reviews']:
             review['sentiment'] = analyze_review_sentiments(review['review'])
-        dealer = CarDealerModel.objects.get(id=dealer_id)
-        context['dealer'] = dealer
-        return render(request, 'djangoapp/dealer_details.html', context)
+        try:
+            dealer = CarDealer.objects.get(id=dealer_id)
+            context['dealer'] = dealer
+            return render(request, 'djangoapp/dealer_details.html', context)
+        except CarDealer.DoesNotExist:
+            return HttpResponseBadRequest('Dealership not found')
 
 def get_dealer_reviews_from_cf(dealer_id):
     """Retrieves dealer reviews from a cloud function."""
@@ -167,10 +170,10 @@ def get_dealer_by_id(request, dealer_id):
     """
     try:
         # Fetch the dealer from the database using the dealer ID
-        dealer = CarDealerModel.objects.get(id=dealer_id)
+        dealer = CarDealer.objects.get(id=dealer_id)
         # Render a template with dealer details (you need to create this template)
         return render(request, 'djangoapp/dealer_by_id.html', {'dealer': dealer})
-    except CarDealerModel.DoesNotExist:
+    except CarDealer.DoesNotExist:
         # If the dealer is not found, return an error message
         return HttpResponse('Dealer not found', status=404)
 
@@ -193,12 +196,12 @@ def get_dealers_from_cf(dealerships_url):
 
 def list_dealerships(request):
     # Fetch the list of dealerships from your database or wherever you store the data
-    dealerships = Dealer.objects.all()  # Modify this based on your data retrieval logic
+    dealerships = CarDealer.objects.all()  # Modify this based on your data retrieval logic
 
     # Render the template with the list of dealerships
     return render(request, 'djangoapp/list_dealerships.html', {'dealerships': dealerships})
 
-    # Other view functions...
+# Other view functions...
 
 def some_function(request):
     if request.method == 'POST':
