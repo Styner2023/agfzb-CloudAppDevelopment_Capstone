@@ -11,6 +11,7 @@ from djangoapp import views
 app_name = 'djangoapp'
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # path('', views.index, name='index'),  # Add this line for the root URL
     path('djangoapp/', views.get_dealerships, name='djangoapp1'),
     path('dealerships/', views.list_dealerships, name='dealerships'),
     path('', views.get_dealerships, name='index'),
