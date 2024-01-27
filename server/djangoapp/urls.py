@@ -24,6 +24,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('some_path/', views.some_function, name='some_function'),
     path('register/', views.register, name='register'),
+    path('cart.json', views.cart_json, name='cart_json'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # path('dealer/<int:dealer_id>/', views.get_dealer_by_id, name='dealer_details'),

@@ -6,7 +6,8 @@ import requests
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+# from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from .models import CarDealer, Car  # Import the updated CarDealer and Car models
@@ -234,3 +235,13 @@ def register(request):
 
 def index(request):
     return render(request, 'djangoapp/index.html')
+
+    # Other view functions...
+
+def cart_json(request):
+    # Replace this with the actual data you want to return
+    data = {
+        'items': [],
+        'total': 0,
+    }
+    return JsonResponse(data)
