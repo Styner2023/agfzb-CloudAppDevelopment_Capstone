@@ -68,10 +68,11 @@ class DealerReview(models.Model):
         return f"Review by {self.name} on {self.purchase_date}"
 
 # Car model with fields: Make, Model, Year, Color, Price, Mileage
+
 class Car(models.Model):
     make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
     model = models.ForeignKey(CarModel, on_delete=models.CASCADE)
-    # dealer = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE) 
+    dealer = models.ForeignKey(CarDealer, on_delete=models.CASCADE)  # Changed from CarDealerModel to CarDealer
     year = models.IntegerField()
     color = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -79,3 +80,15 @@ class Car(models.Model):
 
     def __str__(self):
         return f'{self.make} {self.model} ({self.year})'
+
+# class Car(models.Model):
+#     make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
+#     model = models.ForeignKey(CarModel, on_delete=models.CASCADE)
+#     dealer = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE) 
+#     year = models.IntegerField()
+#     color = models.CharField(max_length=255)
+#     price = models.DecimalField(max_digits=8, decimal_places=2)
+#     mileage = models.IntegerField()
+
+#     def __str__(self):
+#         return f'{self.make} {self.model} ({self.year})'
