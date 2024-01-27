@@ -42,7 +42,8 @@ def add_review(request, dealer_id):
     """Add a review for a car dealer."""
     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
     if request.method == 'GET':
-        cars = Car.objects.filter(model__dealer_id=dealer_id)
+        cars = Car.objects.filter(dealer_id=dealer_id)
+        # cars = Car.objects.filter(model__dealer_id=dealer_id)
         print(f"cars: {cars}")  # Print the query results
         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
     
