@@ -27,7 +27,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('index')
+            return redirect('djangoapp:index')
+            # return redirect('index')
         else:
             return render(request, 'djangoapp/login.html', {'error': 'Invalid username or password'})
     else:
@@ -37,9 +38,10 @@ def login_view(request):
 @require_http_methods(["GET"])
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
-    print(dealer_id)  # Print the value of dealer_id
+    print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
     if request.method == 'GET':
-        cars = Car.objects.filter(dealer_id=dealer_id)
+        cars = Car.objects.filter(model__dealer_id=dealer_id)
+        print(f"cars: {cars}")  # Print the query results
         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
     
     if request.method == 'POST':
