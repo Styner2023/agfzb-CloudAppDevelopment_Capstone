@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from .models import CarDealer, Car  # Import the updated CarDealer and Car models
 
@@ -33,6 +34,7 @@ def login_view(request):
         return render(request, 'djangoapp/login.html')
 
 @login_required
+@require_http_methods(["GET"])
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
     print(dealer_id)  # Print the value of dealer_id
@@ -46,6 +48,8 @@ def add_review(request, dealer_id):
 
     return HttpResponseBadRequest('Invalid HTTP method')
 
+@login_required
+@require_http_methods(["POST"])
 def process_add_review_post(request, dealer_id):
     """Process POST request for add_review."""
     purchase_check = request.POST.get('purchasecheck')
