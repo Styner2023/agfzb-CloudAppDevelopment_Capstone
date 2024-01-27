@@ -35,6 +35,7 @@ def login_view(request):
 @login_required
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
+    print(dealer_id)  # Print the value of dealer_id
     if request.method == 'GET':
         cars = Car.objects.filter(dealer_id=dealer_id)
         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
