@@ -35,7 +35,8 @@ def login_view(request):
         return render(request, 'djangoapp/login.html')
 
 @login_required
-@require_http_methods(["GET"])
+@require_http_methods(["GET", "POST"])
+# @require_http_methods(["GET"])
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
