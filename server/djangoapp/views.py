@@ -2,6 +2,7 @@
 from datetime import datetime
 import logging
 import requests
+import time
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
@@ -249,3 +250,15 @@ def cart_json(request):
         'total': 0,
     }
     return JsonResponse(data)
+
+def get_reviews(request, dealer_id):
+    logger.info("get_reviews view called")  # Log when the function is called
+    context = {}
+    reviews_url = f"https://kstiner101-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/djangoapp/dealer/{dealer_id}/reviews"
+    reviews = get_reviews_from_cf(reviews_url)
+    if reviews:
+        logger.info(f"Reviews fetched successfully: {reviews}")  # Log fetched data
+    else:
+        logger.error("No reviews fetched")
+    context['reviews_list'] = reviews
+    return render(request, 'djangoapp/reviews.html', context)
