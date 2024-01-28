@@ -38,6 +38,7 @@ def login_view(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 # @require_http_methods(["GET"])
+# favorite_car= 'my favorite car is "bmw"'
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
@@ -139,6 +140,7 @@ def get_dealer_details(request, dealer_id):
             return HttpResponseBadRequest('Missing dealer_id')
         context = {}
         context['reviews'] = get_dealer_reviews_from_cf(dealer_id)
+        print(context, "KARM", dealer_id)
         for review in context['reviews']:
             review['sentiment'] = analyze_review_sentiments(review['review'])
         try:
@@ -156,6 +158,7 @@ def get_dealer_reviews_from_cf(dealer_id):
     )
     headers = {'Authorization': 'Bearer KidOOw8m-hso_lc2AgTMLdxmudJdgaJAe-dewXr62x1L'}
     response = requests.get(dealer_reviews_url, headers=headers, timeout=10)
+    print(response.json(), "Karm Car")
     if response.status_code == 200:
         return response.json()
     return []

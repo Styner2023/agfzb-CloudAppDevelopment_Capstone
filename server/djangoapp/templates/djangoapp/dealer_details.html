@@ -8,8 +8,8 @@
     {% if user.is_authenticated %}
     <nav>
         <a href="{% url 'djangoapp:index' %}">Home</a>
-        <a href="{% url 'djangoapp:dealer_details' dealer_id=dealer_id %}">Dealers</a>
-        <a href="{% url 'djangoapp:add_review' dealer_id=dealer_id %}" class="btn btn-primary">Add Review</a>
+        {% comment %} <a href="{% url 'djangoapp:dealer_details' dealer_id=dealer_id %}">Dealers</a> {% endcomment %}
+        {% comment %} <a href="{% url 'djangoapp:add_review' dealer_id=dealer_id %}" class="btn btn-primary">Add Review</a> {% endcomment %}
         <a href="{% url 'djangoapp:logout' %}">Logout</a>
     </nav>
     {% else %}
