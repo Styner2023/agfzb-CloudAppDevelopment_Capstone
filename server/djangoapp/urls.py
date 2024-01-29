@@ -16,7 +16,9 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('dealer/<int:dealer_id>/', views.get_dealer_details, name='dealer_details'),
-    path('dealer/<int:dealer_id>/reviews/', views.get_dealer_reviews, name='dealer_reviews'),
+     # other url patterns...
+    path('dealer/<int:dealer_id>/reviews/', views.dealer_reviews, name='dealer_reviews'),
+    # path('dealer/<int:dealer_id>/reviews/', views.get_dealer_reviews, name='dealer_reviews'),
     path('dealer/<int:dealer_id>/add-review/', views.add_review, name="add_review"),
     path('dealer/<int:dealer_id>/add-review/post/', views.process_add_review_post, name="process_add_review_post"),
     path('dealership/<int:dealer_id>/', views.view_dealership, name='view_dealership'),
