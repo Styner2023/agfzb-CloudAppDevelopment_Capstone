@@ -1,4 +1,14 @@
-{% extends "djangoapp/layout.html" %}
+<!-- reviews.html -->
+{% for review in reviews %}
+    <div>
+        <h2>{{ review.name }}</h2>
+        <p>{{ review.review }}</p>
+        <p>Rating: {{ review.rating }}</p>
+        <p>Date: {{ review.review_date }}</p>
+    </div>
+{% endfor %}
+
+<!-- {% extends "djangoapp/layout.html" %}
 
 {% block content %}
 <div class="container">
@@ -15,4 +25,4 @@
     <p>No reviews found.</p>
     {% endfor %}
 </div>
-{% endblock %}
+{% endblock %} -->
