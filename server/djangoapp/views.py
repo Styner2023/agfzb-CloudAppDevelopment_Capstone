@@ -11,7 +11,8 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, Http
 # from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from .models import CarDealer, Car  # Import the updated CarDealer and Car models
+from .models import CarDealer, Car, DealerReview  # Import the updated CarDealer, Car, and DealerReview model
+from .forms import ReviewForm
 
 # Logger setup
 logger = logging.getLogger(__name__)
@@ -40,20 +41,69 @@ def login_view(request):
 @require_http_methods(["GET", "POST"])
 # @require_http_methods(["GET"])
 # favorite_car= 'my favorite car is "bmw"'
+
+@login_required
+@require_http_methods(["GET", "POST"])
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
     if request.method == 'GET':
         cars = Car.objects.filter(dealer_id=dealer_id)
-        # cars = Car.objects.filter(model__dealer_id=dealer_id)
+        form = ReviewForm()  
         print(f"cars: {cars}")  # Print the query results
-        return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
+        return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id, 'form': form})
     
-    if request.method == 'POST':
-        # Process POST request
-        return process_add_review_post(request, dealer_id)
+    elif request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.dealer_id = dealer_id
+            review.save()
+            return redirect('dealer_reviews', dealer_id=dealer_id)  # Updated line
+        else:
+            print("Form is not valid")  # Print statement for debugging
+            return render(request, 'djangoapp/add_review.html', {'form': form, 'dealer_id': dealer_id})
 
-    return HttpResponseBadRequest('Invalid HTTP method')
+    else:
+        return HttpResponseBadRequest('Invalid HTTP method')
+        
+# def add_review(request, dealer_id):
+#     """Add a review for a car dealer."""
+#     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
+#     if request.method == 'GET':
+#         cars = Car.objects.filter(dealer_id=dealer_id)
+#         form = ReviewForm()  
+#         print(f"cars: {cars}")  # Print the query results
+#         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id, 'form': form})
+    
+#     elif request.method == 'POST':
+#         form = ReviewForm(request.POST)
+#         if form.is_valid():
+#             review = form.save(commit=False)
+#             review.dealer_id = dealer_id
+#             review.save()
+#             return redirect('reviews', dealer_id=dealer_id)
+#         else:
+#             print("Form is not valid")  # Print statement for debugging
+#             return render(request, 'djangoapp/add_review.html', {'form': form, 'dealer_id': dealer_id})
+
+#     else:
+#         return HttpResponseBadRequest('Invalid HTTP method')
+
+# def add_review(request, dealer_id):
+#     """Add a review for a car dealer."""
+#     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
+#     if request.method == 'GET':
+#         cars = Car.objects.filter(dealer_id=dealer_id)
+#         # cars = Car.objects.filter(model__dealer_id=dealer_id)
+#         print(f"cars: {cars}")  # Print the query results
+#         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id})
+    
+#     if request.method == 'POST':
+#         # Process POST request
+#         return process_add_review_post(request, dealer_id)
+
+#     return HttpResponseBadRequest('Invalid HTTP method')
 
 @login_required
 @require_http_methods(["POST"])
@@ -124,7 +174,7 @@ def view_dealership(request, dealer_id):
 def get_dealerships(request):
     logger.info("get_dealerships view called")  # Log when the function is called
     context = {}
-    dealerships_url = "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    dealerships_url = "https://kstiner101-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealerships = get_dealers_from_cf(dealerships_url)
     if dealerships:
         logger.info(f"Dealerships fetched successfully: {dealerships}")  # Log fetched data
@@ -160,7 +210,13 @@ def get_dealer_reviews(request, dealer_id):
         for review in reviews:
             review['sentiment'] = analyze_review_sentiments(review['review'])
     context['reviews_list'] = reviews
-    return render(request, 'djangoapp/reviews.html', context)            
+    return render(request, 'djangoapp/reviews.html', context)
+
+@login_required
+def reviews(request, dealer_id):
+    """Fetch and display reviews for a specific dealer."""
+    reviews = DealerReview.objects.filter(dealer_id=dealer_id)
+    return render(request, 'djangoapp/reviews.html', {'reviews': reviews, 'dealer_id': dealer_id})            
 
 def get_dealer_reviews_from_cf(dealer_id):
     """Retrieves dealer reviews from a cloud function."""
