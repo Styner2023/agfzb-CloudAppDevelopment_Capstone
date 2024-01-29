@@ -1,0 +1,18 @@
+{% extends "djangoapp/layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Dealer Reviews</h1>
+    {% for review in reviews_list %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ review.name }}</h5>
+            <p class="card-text">{{ review.content }}</p>
+            <!-- Add more review details as needed -->
+        </div>
+    </div>
+    {% empty %}
+    <p>No reviews found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

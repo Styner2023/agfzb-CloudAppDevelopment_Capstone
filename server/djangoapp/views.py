@@ -124,7 +124,7 @@ def view_dealership(request, dealer_id):
 def get_dealerships(request):
     logger.info("get_dealerships view called")  # Log when the function is called
     context = {}
-    dealerships_url = "https://kstiner101-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    dealerships_url = "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealerships = get_dealers_from_cf(dealerships_url)
     if dealerships:
         logger.info(f"Dealerships fetched successfully: {dealerships}")  # Log fetched data
@@ -150,6 +150,17 @@ def get_dealer_details(request, dealer_id):
             return render(request, 'djangoapp/dealer_details.html', context)
         except CarDealer.DoesNotExist:
             return HttpResponseBadRequest('Dealership not found')
+
+def get_dealer_reviews(request, dealer_id):
+    logger.info("get_dealer_reviews view called")
+    context = {}
+    reviews = get_dealer_reviews_from_cf(dealer_id)
+    if reviews:
+        logger.info(f"Reviews fetched successfully: {reviews}")
+        for review in reviews:
+            review['sentiment'] = analyze_review_sentiments(review['review'])
+    context['reviews_list'] = reviews
+    return render(request, 'djangoapp/reviews.html', context)            
 
 def get_dealer_reviews_from_cf(dealer_id):
     """Retrieves dealer reviews from a cloud function."""
@@ -255,10 +266,24 @@ def get_reviews(request, dealer_id):
     logger.info("get_reviews view called")  # Log when the function is called
     context = {}
     reviews_url = f"https://kstiner101-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/djangoapp/dealer/{dealer_id}/reviews"
-    reviews = get_reviews_from_cf(reviews_url)
-    if reviews:
+    response = requests.get(reviews_url, timeout=10)
+    if response.status_code == 200:
+        reviews = response.json()
         logger.info(f"Reviews fetched successfully: {reviews}")  # Log fetched data
     else:
+        reviews = []
         logger.error("No reviews fetched")
     context['reviews_list'] = reviews
     return render(request, 'djangoapp/reviews.html', context)
+
+# def get_reviews(request, dealer_id):
+#     logger.info("get_reviews view called")  # Log when the function is called
+#     context = {}
+#     reviews_url = f"https://kstiner101-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/djangoapp/dealer/{dealer_id}/reviews"
+#     reviews = get_reviews_from_cf(reviews_url)
+#     if reviews:
+#         logger.info(f"Reviews fetched successfully: {reviews}")  # Log fetched data
+#     else:
+#         logger.error("No reviews fetched")
+#     context['reviews_list'] = reviews
+#     return render(request, 'djangoapp/reviews.html', context)
