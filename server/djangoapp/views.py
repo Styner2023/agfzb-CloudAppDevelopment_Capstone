@@ -39,34 +39,30 @@ def login_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
-# @require_http_methods(["GET"])
-# favorite_car= 'my favorite car is "bmw"'
-
-@login_required
-@require_http_methods(["GET", "POST"])
 def add_review(request, dealer_id):
     """Add a review for a car dealer."""
     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
     if request.method == 'GET':
         cars = Car.objects.filter(dealer_id=dealer_id)
-        form = ReviewForm()  
+        form = ReviewForm()
         print(f"cars: {cars}")  # Print the query results
         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id, 'form': form})
     
     elif request.method == 'POST':
         form = ReviewForm(request.POST)
+        print(request.POST)  # Print the form data
         if form.is_valid():
-            review = form.save(commit=False)
+            review = form.save(commit=False)  # Ensure this line is correctly indented
             review.dealer_id = dealer_id
             review.save()
-            return redirect('dealer_reviews', dealer_id=dealer_id)  # Updated line
+            return redirect('djangoapp:dealer_reviews', dealer_id=dealer_id)  # Make sure this line has the right namespace
         else:
             print("Form is not valid")  # Print statement for debugging
             return render(request, 'djangoapp/add_review.html', {'form': form, 'dealer_id': dealer_id})
 
     else:
         return HttpResponseBadRequest('Invalid HTTP method')
-        
+
 # def add_review(request, dealer_id):
 #     """Add a review for a car dealer."""
 #     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
@@ -258,6 +254,7 @@ def get_dealer_by_id(request, dealer_id):
         # If the dealer is not found, return an error message
         return HttpResponse('Dealer not found', status=404)
 
+    logger = logging.getLogger(__name__)
 def get_dealers_from_cf(dealerships_url):
     try:
         response = requests.get(dealerships_url, timeout=10)
@@ -266,14 +263,31 @@ def get_dealers_from_cf(dealerships_url):
         logger.info(f"Dealerships received: {dealerships}")
         return dealerships
     except requests.exceptions.HTTPError as errh:
-        logger.error(f"Http Error: {errh}")
+        logger.error(f"HTTP Error: {errh}")
     except requests.exceptions.ConnectionError as errc:
         logger.error(f"Error Connecting: {errc}")
     except requests.exceptions.Timeout as errt:
         logger.error(f"Timeout Error: {errt}")
     except requests.exceptions.RequestException as err:
-        logger.error(f"Error: {err}")
+        logger.error(f"General Error: {err}")
     return []
+
+# def get_dealers_from_cf(dealerships_url):
+#     try:
+#         response = requests.get(dealerships_url, timeout=10)
+#         response.raise_for_status()  # Will raise an HTTPError for bad HTTP status codes
+#         dealerships = response.json()
+#         logger.info(f"Dealerships received: {dealerships}")
+#         return dealerships
+#     except requests.exceptions.HTTPError as errh:
+#         logger.error(f"Http Error: {errh}")
+#     except requests.exceptions.ConnectionError as errc:
+#         logger.error(f"Error Connecting: {errc}")
+#     except requests.exceptions.Timeout as errt:
+#         logger.error(f"Timeout Error: {errt}")
+#     except requests.exceptions.RequestException as err:
+#         logger.error(f"Error: {err}")
+#     return []
 
 def list_dealerships(request):
     # Fetch the list of dealerships from your database or wherever you store the data

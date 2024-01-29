@@ -6,4 +6,6 @@
 <p>State: {{ dealer.state }}</p>
 <!-- Add other fields as needed -->
 
+<a href="{% url 'djangoapp:dealer_reviews' dealer_id=dealer.id %}">View Reviews</a>
+
 
