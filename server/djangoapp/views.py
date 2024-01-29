@@ -196,17 +196,21 @@ def get_dealer_details(request, dealer_id):
             return render(request, 'djangoapp/dealer_details.html', context)
         except CarDealer.DoesNotExist:
             return HttpResponseBadRequest('Dealership not found')
+            
+def dealer_reviews(request, dealer_id):
+    reviews = DealerReview.objects.filter(dealer_id=dealer_id)
+    return render(request, 'reviews.html', {'reviews': reviews})
 
-def get_dealer_reviews(request, dealer_id):
-    logger.info("get_dealer_reviews view called")
-    context = {}
-    reviews = get_dealer_reviews_from_cf(dealer_id)
-    if reviews:
-        logger.info(f"Reviews fetched successfully: {reviews}")
-        for review in reviews:
-            review['sentiment'] = analyze_review_sentiments(review['review'])
-    context['reviews_list'] = reviews
-    return render(request, 'djangoapp/reviews.html', context)
+# def get_dealer_reviews(request, dealer_id):
+#     logger.info("get_dealer_reviews view called")
+#     context = {}
+#     reviews = get_dealer_reviews_from_cf(dealer_id)
+#     if reviews:
+#         logger.info(f"Reviews fetched successfully: {reviews}")
+#         for review in reviews:
+#             review['sentiment'] = analyze_review_sentiments(review['review'])
+#     context['reviews_list'] = reviews
+#     return render(request, 'djangoapp/reviews.html', context)
 
 @login_required
 def reviews(request, dealer_id):
@@ -357,3 +361,4 @@ def get_reviews(request, dealer_id):
 #         logger.error("No reviews fetched")
 #     context['reviews_list'] = reviews
 #     return render(request, 'djangoapp/reviews.html', context)
+
