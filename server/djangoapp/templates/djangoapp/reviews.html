@@ -1,28 +1,4 @@
-{% extends "base_generic.html" %}
-
-{% block content %}
-  <h2>Reviews</h2>
-  {% for review in dealer_reviews %}
-    <div>
-      <h3>{{ review.name }}</h3>
-      <p>{{ review.review }}</p>
-      <p>Rating: {{ review.rating }}</p>
-      <p>Date: {{ review.review_date }}</p>
-    </div>
-  {% endfor %}
-{% endblock %}
-
-<!-- reviews.html
-{% for review in reviews %}
-    <div>
-        <h2>{{ review.name }}</h2>
-        <p>{{ review.review }}</p>
-        <p>Rating: {{ review.rating }}</p>
-        <p>Date: {{ review.review_date }}</p>
-    </div>
-{% endfor %} -->
-
-<!-- {% extends "djangoapp/layout.html" %}
+{% extends "djangoapp/layout.html" %}
 
 {% block content %}
 <div class="container">
@@ -31,12 +7,9 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ review.name }}</h5>
-            <p class="card-text">{{ review.content }}</p>
-            <!-- Add more review details as needed -->
-        <!-- </div>
+            <p class="card-text">{{ review.review }}</p>
+        </div>
     </div>
-    {% empty %}
-    <p>No reviews found.</p>
-    {% endfor %}
+{% endfor %}
 </div>
-{% endblock %} --> -->
+{% endblock %}

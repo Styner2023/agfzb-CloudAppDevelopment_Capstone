@@ -371,8 +371,7 @@ def reviews(request, dealer_id):
     paginator = Paginator(dealer_reviews, 5) # Show 5 reviews per page
     page = request.GET.get('page')
     reviews = paginator.get_page(page)
-    context = {"dealer_reviews": reviews}
-    return render(request, 'djangoapp/reviews.html', context)
+    return render(request, 'djangoapp/reviews.html', {'reviews_list': reviews})
 
 def review_list(request):
     reviews = DealerReview.objects.all()

@@ -65,6 +65,8 @@ class DealerReview(models.Model):
     sentiment = models.CharField(max_length=255)  # The sentiment value will be determined by Watson NLU service
     id = models.AutoField(primary_key=True)
     rating = models.IntegerField()  # add this line
+    dealer_name = models.CharField(max_length=255, default='Default Dealer Name')  # updated line
+    review_text = models.TextField()
 
     def __str__(self):
         return f"Review by {self.name} on {self.purchase_date}"
