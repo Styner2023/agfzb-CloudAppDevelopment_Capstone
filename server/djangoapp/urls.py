@@ -8,6 +8,13 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from djangoapp import views
 
+from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.views import LogoutView
+from djangoapp import views
+
 app_name = 'djangoapp'
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,9 +23,8 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('dealer/<int:dealer_id>/', views.get_dealer_details, name='dealer_details'),
-     # other url patterns...
-    path('dealer/<int:dealer_id>/reviews/', views.dealer_reviews, name='dealer_reviews'),
-    # path('dealer/<int:dealer_id>/reviews/', views.get_dealer_reviews, name='dealer_reviews'),
+    path('reviews/', views.review_list, name='review_list'),
+    path('dealer/<int:dealer_id>/reviews/', views.reviews, name='reviews'),
     path('dealer/<int:dealer_id>/add-review/', views.add_review, name="add_review"),
     path('dealer/<int:dealer_id>/add-review/post/', views.process_add_review_post, name="process_add_review_post"),
     path('dealership/<int:dealer_id>/', views.view_dealership, name='view_dealership'),
@@ -29,6 +35,10 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('cart.json', views.cart_json, name='cart_json'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    # path('dealer/<int:dealer_id>/reviews/', views.dealer_reviews, name='dealer_reviews'),
+    # path('dealer/<int:dealer_id>/reviews/', views.get_dealer_reviews, name='dealer_reviews'),
+
 
 # """
 # This module defines the URL patterns for the djangoapp application.

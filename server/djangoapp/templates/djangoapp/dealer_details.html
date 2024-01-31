@@ -18,6 +18,8 @@
         <a href="{% url 'djangoapp:login' %}">Login</a>
         <a href="{% url 'djangoapp:register' %}">Register</a>
         <a href="{% url 'djangoapp:add_review' dealer_id=dealer_id %}" class="btn btn-primary">Add Review</a>
+        <a href="{% url 'djangoapp:dealer_reviews' dealer_id=dealer_id %}" class="btn btn-primary">View Reviews</a>
+
     </nav>
     {% endif %}
 

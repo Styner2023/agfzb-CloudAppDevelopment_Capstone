@@ -5,6 +5,8 @@ import requests
 import time
 
 from django.shortcuts import render, redirect
+from djangoapp.models import DealerReview
+from django.core.paginator import Paginator
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, HttpResponseNotAllowed
@@ -170,7 +172,7 @@ def view_dealership(request, dealer_id):
 def get_dealerships(request):
     logger.info("get_dealerships view called")  # Log when the function is called
     context = {}
-    dealerships_url = "https://kstiner101-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    dealerships_url = "https://kstiner101-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealerships = get_dealers_from_cf(dealerships_url)
     if dealerships:
         logger.info(f"Dealerships fetched successfully: {dealerships}")  # Log fetched data
@@ -362,3 +364,16 @@ def get_reviews(request, dealer_id):
 #     context['reviews_list'] = reviews
 #     return render(request, 'djangoapp/reviews.html', context)
 
+# Add this function to your existing code
+@login_required(login_url='/djangoapp/login')
+def reviews(request, dealer_id):
+    dealer_reviews = DealerReview.objects.filter(dealer=dealer_id)
+    paginator = Paginator(dealer_reviews, 5) # Show 5 reviews per page
+    page = request.GET.get('page')
+    reviews = paginator.get_page(page)
+    context = {"dealer_reviews": reviews}
+    return render(request, 'djangoapp/reviews.html', context)
+
+def review_list(request):
+    reviews = DealerReview.objects.all()
+    return render(request, 'reviews/review_list.html', {'reviews': reviews})

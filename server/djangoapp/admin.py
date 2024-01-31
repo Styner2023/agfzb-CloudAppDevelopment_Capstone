@@ -10,7 +10,7 @@ from .models import CarMake, CarModel, DealerReview  # Removed CarDealerModel
 # Define an admin class for CarMake
 # This includes the CarModelInline, allowing us to edit CarModel instances on the CarMake admin page
 class CarMakeAdmin(admin.ModelAdmin):
-     pass  # No inlines to include
+    pass
     # inlines = [CarModelInline]  # The inlines to include
 
 # Register the models with the admin site

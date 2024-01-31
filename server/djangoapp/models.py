@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
+# from .dealer import Dealer
 
 # Car Make model with fields: Name, Description, Country, Founded Date, etc.
 class CarMake(models.Model):
@@ -53,7 +54,7 @@ class DealerReview(models.Model):
     """
     Represents a review of a car dealership.
     """
-    # dealership = models.ForeignKey(CarDealerModel, on_delete=models.CASCADE)
+    dealer = models.ForeignKey(CarDealer, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     purchase = models.BooleanField()
     review = models.TextField()
@@ -63,6 +64,7 @@ class DealerReview(models.Model):
     car_year = models.IntegerField()
     sentiment = models.CharField(max_length=255)  # The sentiment value will be determined by Watson NLU service
     id = models.AutoField(primary_key=True)
+    rating = models.IntegerField()  # add this line
 
     def __str__(self):
         return f"Review by {self.name} on {self.purchase_date}"
@@ -79,7 +81,7 @@ class Car(models.Model):
     mileage = models.IntegerField()
 
     def __str__(self):
-        return f'{self.make} {self.model} ({self.year})'
+        return f'{self.make} {self.model} ({self.year})' # Add this function to your existing code
 
 # class Car(models.Model):
 #     make = models.ForeignKey(CarMake, on_delete=models.CASCADE)
