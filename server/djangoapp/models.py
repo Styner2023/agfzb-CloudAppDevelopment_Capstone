@@ -58,13 +58,14 @@ class DealerReview(models.Model):
     name = models.CharField(max_length=255)
     purchase = models.BooleanField()
     review = models.TextField()
+    rating = models.IntegerField(default=0)  # add default=0 here
     purchase_date = models.DateField()
     car_make = models.CharField(max_length=255)
     car_model = models.CharField(max_length=255)
     car_year = models.IntegerField()
     sentiment = models.CharField(max_length=255)  # The sentiment value will be determined by Watson NLU service
     id = models.AutoField(primary_key=True)
-    rating = models.IntegerField()  # add this line
+    # rating = models.IntegerField()  # add this line
     dealer_name = models.CharField(max_length=255, default='Default Dealer Name')  # updated line
     review_text = models.TextField()
 

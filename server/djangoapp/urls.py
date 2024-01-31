@@ -15,6 +15,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from djangoapp import views
 
+
 app_name = 'djangoapp'
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,10 +25,13 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('dealer/<int:dealer_id>/', views.get_dealer_details, name='dealer_details'),
     path('reviews/', views.review_list, name='review_list'),
+    path('dealer/<int:dealer_id>/reviews/', views.dealer_reviews, name='dealer_reviews'),
     path('dealer/<int:dealer_id>/reviews/', views.reviews, name='reviews'),
     path('dealer/<int:dealer_id>/add-review/', views.add_review, name="add_review"),
+    path('dealer/<int:dealer_id>/submit_review/', views.submit_review, name='submit_review'),
     path('dealer/<int:dealer_id>/add-review/post/', views.process_add_review_post, name="process_add_review_post"),
     path('dealership/<int:dealer_id>/', views.view_dealership, name='view_dealership'),
+    # path('djangoapp/', include(('djangoapp.urls', 'djangoapp'), namespace='djangoapp')),
     path('login/', views.login_view, name='login'),
     path('accounts/login/', views.login_view, name='accounts_login'),  # Added this line
     path('logout/', LogoutView.as_view(), name='logout'),

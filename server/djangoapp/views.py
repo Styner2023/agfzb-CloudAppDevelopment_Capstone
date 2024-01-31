@@ -13,7 +13,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest, Http
 # from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from .models import CarDealer, Car, DealerReview  # Import the updated CarDealer, Car, and DealerReview model
+from .forms import ReviewForm # Import the updated CarDealer, Car, and DealerReview model
 from .forms import ReviewForm
 
 # Logger setup
@@ -39,6 +39,7 @@ def login_view(request):
     else:
         return render(request, 'djangoapp/login.html')
 
+
 @login_required
 @require_http_methods(["GET", "POST"])
 def add_review(request, dealer_id):
@@ -54,9 +55,20 @@ def add_review(request, dealer_id):
         form = ReviewForm(request.POST)
         print(request.POST)  # Print the form data
         if form.is_valid():
-            review = form.save(commit=False)  # Ensure this line is correctly indented
-            review.dealer_id = dealer_id
+            # Extract the data from the POST request
+            name = form.cleaned_data['name']
+            purchase = form.cleaned_data['purchase']
+            review_text = form.cleaned_data['review']
+            purchase_date = form.cleaned_data['purchase_date']
+            car_make = form.cleaned_data['car_make']
+            car_model = form.cleaned_data['car_model']
+            car_year = form.cleaned_data['car_year']
+            rating = form.cleaned_data['rating']
+
+            # Create a new Review object and save it to the database
+            review = Review(dealer_id=dealer_id, name=name, purchase=purchase, review=review_text, purchase_date=purchase_date, car_make=car_make, car_model=car_model, car_year=car_year, rating=rating)
             review.save()
+
             return redirect('djangoapp:dealer_reviews', dealer_id=dealer_id)  # Make sure this line has the right namespace
         else:
             print("Form is not valid")  # Print statement for debugging
@@ -64,6 +76,32 @@ def add_review(request, dealer_id):
 
     else:
         return HttpResponseBadRequest('Invalid HTTP method')
+
+# @login_required
+# @require_http_methods(["GET", "POST"])
+# def add_review(request, dealer_id):
+#     """Add a review for a car dealer."""
+#     print(f"dealer_id: {dealer_id}")  # Print the value of dealer_id
+#     if request.method == 'GET':
+#         cars = Car.objects.filter(dealer_id=dealer_id)
+#         form = ReviewForm()
+#         print(f"cars: {cars}")  # Print the query results
+#         return render(request, 'djangoapp/add_review.html', {'cars': cars, 'dealer_id': dealer_id, 'form': form})
+    
+#     elif request.method == 'POST':
+#         form = ReviewForm(request.POST)
+#         print(request.POST)  # Print the form data
+#         if form.is_valid():
+#             review = form.save(commit=False)  # Ensure this line is correctly indented
+#             review.dealer_id = dealer_id
+#             review.save()
+#             return redirect('djangoapp:dealer_reviews', dealer_id=dealer_id)  # Make sure this line has the right namespace
+#         else:
+#             print("Form is not valid")  # Print statement for debugging
+#             return render(request, 'djangoapp/add_review.html', {'form': form, 'dealer_id': dealer_id})
+
+#     else:
+#         return HttpResponseBadRequest('Invalid HTTP method')
 
 # def add_review(request, dealer_id):
 #     """Add a review for a car dealer."""
@@ -201,7 +239,7 @@ def get_dealer_details(request, dealer_id):
             
 def dealer_reviews(request, dealer_id):
     reviews = DealerReview.objects.filter(dealer_id=dealer_id)
-    return render(request, 'reviews.html', {'reviews': reviews})
+    return render(request, 'djangoapp/reviews.html', {'reviews': reviews})
 
 # def get_dealer_reviews(request, dealer_id):
 #     logger.info("get_dealer_reviews view called")
@@ -376,3 +414,18 @@ def reviews(request, dealer_id):
 def review_list(request):
     reviews = DealerReview.objects.all()
     return render(request, 'reviews/review_list.html', {'reviews': reviews})
+
+@login_required(login_url='/djangoapp/login')
+def submit_review(request, dealer_id):
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.dealer_id = dealer_id
+            if review.rating is None:
+                review.rating = 0  # or whatever default value you want
+            review.save()
+            return redirect('reviews', dealer_id=dealer_id)  # redirect to the reviews page for this dealer
+    else:
+        form = ReviewForm()
+    return render(request, 'djangoapp/submit_review.html', {'form': form})
