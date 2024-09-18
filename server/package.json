@@ -3,7 +3,7 @@
     "@cloudant/cloudant": "^4.5.1",
     "@ibm-cloud/cloudant": "^0.8.0",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "express": "^4.20.0"
   },
   "name": "server",
   "version": "1.0.0",
