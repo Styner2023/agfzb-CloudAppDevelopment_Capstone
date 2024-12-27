@@ -1,4 +1,4 @@
-FROM python:3.12.0-slim-bookworm
+FROM python:3.14.0a3-slim-bookworm
 
 ENV PYTHONBUFFERED 1
 ENV PYTHONWRITEBYTECODE 1
